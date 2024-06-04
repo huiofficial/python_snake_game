@@ -26,10 +26,14 @@ button_font = pygame.font.SysFont(None, 36)
 # 按钮位置和大小
 button_width = 200
 button_height = 50
-restart_button_rect = pygame.Rect((WINDOW_SIZE // 2 - button_width // 2, WINDOW_SIZE // 2),
-                                  (button_width, button_height))
-quit_button_rect = pygame.Rect((WINDOW_SIZE // 2 - button_width // 2, WINDOW_SIZE // 2 + 60),
+easy_button_rect = pygame.Rect((WINDOW_SIZE // 2 - button_width // 2, WINDOW_SIZE // 2 - 60),
                                (button_width, button_height))
+medium_button_rect = pygame.Rect((WINDOW_SIZE // 2 - button_width // 2, WINDOW_SIZE // 2),
+                                 (button_width, button_height))
+hard_button_rect = pygame.Rect((WINDOW_SIZE // 2 - button_width // 2, WINDOW_SIZE // 2 + 60),
+                               (button_width, button_height))
+restart_button_rect = pygame.Rect((WINDOW_SIZE // 2 - button_width // 2, WINDOW_SIZE // 2), (button_width, button_height))
+quit_button_rect = pygame.Rect((WINDOW_SIZE // 2 - button_width // 2, WINDOW_SIZE // 2 + 60), (button_width, button_height))
 
 
 def draw_button(screen, rect, text):
@@ -39,9 +43,35 @@ def draw_button(screen, rect, text):
     screen.blit(text_surface, text_rect)
 
 
+def start_screen():
+    screen.fill(BLACK)
+    title_text = font.render('Level', True, WHITE)
+    text_rect = title_text.get_rect(center=(WINDOW_SIZE // 2, WINDOW_SIZE // 2 - 120))
+    screen.blit(title_text, text_rect)
+
+    draw_button(screen, easy_button_rect, 'Easy')
+    draw_button(screen, medium_button_rect, 'Middle')
+    draw_button(screen, hard_button_rect, 'Hard')
+    pygame.display.update()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if easy_button_rect.collidepoint(event.pos):
+                    return 3
+                elif medium_button_rect.collidepoint(event.pos):
+                    return 7
+                elif hard_button_rect.collidepoint(event.pos):
+                    return 10
+
+
 def game_over_screen(score):
     screen.fill(BLACK)
-    game_over_text = font.render(f'Game Over! Score: {score}', True, WHITE)
+    game_over_text = font.render(f'Game Over!'
+                                 f'Score: {score}', True, WHITE)
     text_rect = game_over_text.get_rect(center=(WINDOW_SIZE // 2, WINDOW_SIZE // 2 - 100))
     screen.blit(game_over_text, text_rect)
 
@@ -63,6 +93,8 @@ def game_over_screen(score):
 
 
 def main():
+    speed = start_screen()
+
     # 初始化贪吃蛇
     snake = [(GRID_WIDTH // 2, GRID_HEIGHT // 2)]
     snake_direction = pygame.K_RIGHT
@@ -129,7 +161,7 @@ def main():
         pygame.display.update()
 
         # 控制游戏速度
-        clock.tick(10)
+        clock.tick(speed)
 
 
 if __name__ == '__main__':
