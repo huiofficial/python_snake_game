@@ -5,13 +5,13 @@ import sys
 # 初始化游戏
 pygame.init()
 
-# 设置游戏窗口大小
-WINDOW_SIZE = 600
+# 设置游戏窗口初始大小
+WINDOW_WIDTH, WINDOW_HEIGHT = 600, 600
 CELL_SIZE = 20
-GRID_WIDTH = WINDOW_SIZE // CELL_SIZE
-GRID_HEIGHT = WINDOW_SIZE // CELL_SIZE
-screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
-pygame.display.set_caption("贪吃蛇游戏")
+
+# 全局变量 screen
+screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
+pygame.display.set_caption("Snake Game")
 
 # 颜色设置
 BLACK = (0, 0, 0)
@@ -26,14 +26,6 @@ button_font = pygame.font.SysFont(None, 36)
 # 按钮位置和大小
 button_width = 200
 button_height = 50
-easy_button_rect = pygame.Rect((WINDOW_SIZE // 2 - button_width // 2, WINDOW_SIZE // 2 - 60),
-                               (button_width, button_height))
-medium_button_rect = pygame.Rect((WINDOW_SIZE // 2 - button_width // 2, WINDOW_SIZE // 2),
-                                 (button_width, button_height))
-hard_button_rect = pygame.Rect((WINDOW_SIZE // 2 - button_width // 2, WINDOW_SIZE // 2 + 60),
-                               (button_width, button_height))
-restart_button_rect = pygame.Rect((WINDOW_SIZE // 2 - button_width // 2, WINDOW_SIZE // 2), (button_width, button_height))
-quit_button_rect = pygame.Rect((WINDOW_SIZE // 2 - button_width // 2, WINDOW_SIZE // 2 + 60), (button_width, button_height))
 
 
 def draw_button(screen, rect, text):
@@ -44,13 +36,21 @@ def draw_button(screen, rect, text):
 
 
 def start_screen():
+    global screen, WINDOW_WIDTH, WINDOW_HEIGHT
     screen.fill(BLACK)
-    title_text = font.render('Level', True, WHITE)
-    text_rect = title_text.get_rect(center=(WINDOW_SIZE // 2, WINDOW_SIZE // 2 - 120))
+    title_text = font.render('Select Difficulty', True, WHITE)
+    text_rect = title_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 120))
     screen.blit(title_text, text_rect)
 
+    easy_button_rect = pygame.Rect((WINDOW_WIDTH // 2 - button_width // 2, WINDOW_HEIGHT // 2 - 60),
+                                   (button_width, button_height))
+    medium_button_rect = pygame.Rect((WINDOW_WIDTH // 2 - button_width // 2, WINDOW_HEIGHT // 2),
+                                     (button_width, button_height))
+    hard_button_rect = pygame.Rect((WINDOW_WIDTH // 2 - button_width // 2, WINDOW_HEIGHT // 2 + 60),
+                                   (button_width, button_height))
+
     draw_button(screen, easy_button_rect, 'Easy')
-    draw_button(screen, medium_button_rect, 'Middle')
+    draw_button(screen, medium_button_rect, 'Medium')
     draw_button(screen, hard_button_rect, 'Hard')
     pygame.display.update()
 
@@ -66,14 +66,35 @@ def start_screen():
                     return 7
                 elif hard_button_rect.collidepoint(event.pos):
                     return 10
+            elif event.type == pygame.VIDEORESIZE:
+                WINDOW_WIDTH, WINDOW_HEIGHT = event.w, event.h
+                screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
+                screen.fill(BLACK)
+                text_rect = title_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 120))
+                easy_button_rect = pygame.Rect((WINDOW_WIDTH // 2 - button_width // 2, WINDOW_HEIGHT // 2 - 60),
+                                               (button_width, button_height))
+                medium_button_rect = pygame.Rect((WINDOW_WIDTH // 2 - button_width // 2, WINDOW_HEIGHT // 2),
+                                                 (button_width, button_height))
+                hard_button_rect = pygame.Rect((WINDOW_WIDTH // 2 - button_width // 2, WINDOW_HEIGHT // 2 + 60),
+                                               (button_width, button_height))
+                screen.blit(title_text, text_rect)
+                draw_button(screen, easy_button_rect, 'Easy')
+                draw_button(screen, medium_button_rect, 'Medium')
+                draw_button(screen, hard_button_rect, 'Hard')
+                pygame.display.update()
 
 
 def game_over_screen(score):
+    global screen, WINDOW_WIDTH, WINDOW_HEIGHT
     screen.fill(BLACK)
-    game_over_text = font.render(f'Game Over!'
-                                 f'Score: {score}', True, WHITE)
-    text_rect = game_over_text.get_rect(center=(WINDOW_SIZE // 2, WINDOW_SIZE // 2 - 100))
+    game_over_text = font.render(f'Game Over! Score: {score}', True, WHITE)
+    text_rect = game_over_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 100))
     screen.blit(game_over_text, text_rect)
+
+    restart_button_rect = pygame.Rect((WINDOW_WIDTH // 2 - button_width // 2, WINDOW_HEIGHT // 2),
+                                      (button_width, button_height))
+    quit_button_rect = pygame.Rect((WINDOW_WIDTH // 2 - button_width // 2, WINDOW_HEIGHT // 2 + 60),
+                                   (button_width, button_height))
 
     draw_button(screen, restart_button_rect, 'Restart')
     draw_button(screen, quit_button_rect, 'Quit')
@@ -90,9 +111,25 @@ def game_over_screen(score):
                 elif quit_button_rect.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
+            elif event.type == pygame.VIDEORESIZE:
+                WINDOW_WIDTH, WINDOW_HEIGHT = event.w, event.h
+                screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
+                screen.fill(BLACK)
+                text_rect = game_over_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 100))
+                restart_button_rect = pygame.Rect((WINDOW_WIDTH // 2 - button_width // 2, WINDOW_HEIGHT // 2),
+                                                  (button_width, button_height))
+                quit_button_rect = pygame.Rect((WINDOW_WIDTH // 2 - button_width // 2, WINDOW_HEIGHT // 2 + 60),
+                                               (button_width, button_height))
+                screen.blit(game_over_text, text_rect)
+                draw_button(screen, restart_button_rect, 'Restart')
+                draw_button(screen, quit_button_rect, 'Quit')
+                pygame.display.update()
 
 
 def main():
+    global screen, WINDOW_WIDTH, WINDOW_HEIGHT, GRID_WIDTH, GRID_HEIGHT, CELL_SIZE
+    GRID_WIDTH = WINDOW_WIDTH // CELL_SIZE
+    GRID_HEIGHT = WINDOW_HEIGHT // CELL_SIZE
     speed = start_screen()
 
     # 初始化贪吃蛇
@@ -115,6 +152,11 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key in [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT]:
                     new_direction = event.key
+            elif event.type == pygame.VIDEORESIZE:
+                WINDOW_WIDTH, WINDOW_HEIGHT = event.w, event.h
+                GRID_WIDTH = WINDOW_WIDTH // CELL_SIZE
+                GRID_HEIGHT = WINDOW_HEIGHT // CELL_SIZE
+                screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
 
         # 防止蛇逆向移动
         if (new_direction == pygame.K_UP and snake_direction != pygame.K_DOWN) or \
